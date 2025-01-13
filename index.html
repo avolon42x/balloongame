@@ -42,34 +42,28 @@
             position: relative;
             flex-grow: 1;
             height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
         }
-        .balloon-svg {
+        .balloon {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100px;
             height: 150px;
+            border-radius: 50%;
             transition: transform 0.2s ease;
         }
-        .balloon-svg .string {
-            stroke: #666;
-            stroke-width: 2;
-            fill: none;
-        }
-        .balloon-svg .balloon-body {
-            transition: fill 0.3s ease;
-        }
         .red {
-            fill: #ff4d4d;
+            background-color: #ff4d4d;
         }
         .yellow {
-            fill: #ffd966;
+            background-color: #ffd966;
         }
         .green {
-            fill: #4caf50;
+            background-color: #4caf50;
         }
         .blue {
-            fill: #4da6ff;
+            background-color: #4da6ff;
         }
     </style>
 </head>
@@ -86,16 +80,12 @@
             </div>
         </div>
         <div class="game-area">
-            <svg class="balloon-svg" id="balloon" viewBox="0 0 100 150">
-                <path class="string" d="M50,120 C55,130 45,140 50,150" />
-                <ellipse class="balloon-body" cx="50" cy="50" rx="30" ry="40" />
-            </svg>
+            <div class="balloon" id="balloon"></div>
         </div>
     </div>
 
     <script>
         const balloon = document.getElementById("balloon");
-        const balloonBody = balloon.querySelector(".balloon-body");
         const currentEarningsDisplay = document.getElementById("currentEarnings");
         const totalEarningsDisplay = document.getElementById("totalEarnings");
         const balloonCountDisplay = document.getElementById("balloonCount");
@@ -116,19 +106,19 @@
         let currentEarnings = 0;
         let totalEarnings = 0;
         let balloonCount = 1;
-        let balloonScale = 1;
+        let balloonSize = 1;
         let currentBalloon;
         let inflationCount = 0;
 
         function randomizeBalloon() {
             currentBalloon = balloonTypes[Math.floor(Math.random() * balloonTypes.length)];
-            balloonBody.className = `balloon-body ${currentBalloon.color}`;
+            balloon.className = `balloon ${currentBalloon.color}`;
         }
 
         function inflateBalloon() {
             inflationCount++;
-            balloonScale += 0.1; // Increase balloon size
-            balloon.style.transform = `scale(${balloonScale})`;
+            balloonSize += 0.2; // Increase balloon size
+            balloon.style.transform = `translateX(-50%) scale(${balloonSize})`;
 
             if (inflationCount >= currentBalloon.popThreshold) {
                 alert(`The ${currentBalloon.color} balloon popped! You lost your earnings for this balloon.`);
@@ -155,8 +145,8 @@
             currentEarnings = 0;
             currentEarningsDisplay.textContent = currentEarnings.toFixed(2);
 
-            balloonScale = 1;
-            balloon.style.transform = `scale(${balloonScale})`;
+            balloonSize = 1;
+            balloon.style.transform = `translateX(-50%) scale(${balloonSize})`;
 
             balloonCount++;
             balloonCountDisplay.textContent = balloonCount;
@@ -169,7 +159,7 @@
             currentEarnings = 0;
             totalEarnings = 0;
             balloonCount = 1;
-            balloonScale = 1;
+            balloonSize = 1;
 
             currentEarningsDisplay.textContent = currentEarnings.toFixed(2);
             totalEarningsDisplay.textContent = totalEarnings.toFixed(2);
@@ -177,7 +167,7 @@
 
             inflationCount = 0;
             randomizeBalloon();
-            balloon.style.transform = `scale(${balloonScale})`;
+            balloon.style.transform = `translateX(-50%) scale(${balloonSize})`;
         }
 
         // Initialize the first balloon
