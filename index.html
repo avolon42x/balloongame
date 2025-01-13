@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychometric Balloon Inflation Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 20px;
+        }
+        .controls {
+            max-width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+        }
+        button:hover {
+            background-color: #ddd;
+        }
+        .scoreboard {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .game-area {
+            position: relative;
+            flex-grow: 1;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .balloon-svg {
+            width: 100px;
+            height: 150px;
+            transition: transform 0.2s ease;
+        }
+        .balloon-svg .string {
+            stroke: #666;
+            stroke-width: 2;
+            fill: none;
+        }
+        .balloon-svg .balloon-body {
+            transition: fill 0.3s ease;
+        }
+        .red {
+            fill: #ff4d4d;
+        }
+        .yellow {
+            fill: #ffd966;
+        }
+        .green {
+            fill: #4caf50;
+        }
+        .blue {
+            fill: #4da6ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Psychometric Balloon Inflation Game</h1>
+    <div class="container">
+        <div class="controls">
+            <button onclick="inflateBalloon()">Inflate Balloon</button>
+            <button onclick="cashIn()">$$ Cash in $$</button>
+            <div class="scoreboard">
+                <p>Balloon: <span id="balloonCount">1</span>/10</p>
+                <p>Current Balloon Earnings: $<span id="currentEarnings">0.00</span></p>
+                <p>Total Earnings: $<span id="totalEarnings">0.00</span></p>
+            </div>
+        </div>
+        <div class="game-area">
+            <svg class="balloon-svg" id="balloon" viewBox="0 0 100 150">
+                <path class="string" d="M50,120 C55,130 45,140 50,150" />
+                <ellipse class="balloon-body" cx="50" cy="50" rx="30" ry="40" />
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        const balloon = document.getElementById("balloon");
+        const balloonBody = balloon.querySelector(".balloon-body");
+        const currentEarningsDisplay = document.getElementById("currentEarnings");
+        const totalEarningsDisplay = document.getElementById("totalEarnings");
+        const balloonCountDisplay = document.getElementById("balloonCount");
+
+        // Function to generate random pop thresholds
+        function generateRandomPopThreshold() {
+            return Math.floor(Math.random() * 20) + 1; // Random number between 1 and 20
+        }
+
+        // Balloon types with randomized thresholds
+        const balloonTypes = [
+            { color: 'red', popThreshold: generateRandomPopThreshold() },
+            { color: 'yellow', popThreshold: generateRandomPopThreshold() },
+            { color: 'green', popThreshold: generateRandomPopThreshold() },
+            { color: 'blue', popThreshold: generateRandomPopThreshold() }
+        ];
+
+        let currentEarnings = 0;
+        let totalEarnings = 0;
+        let balloonCount = 1;
+        let balloonScale = 1;
+        let currentBalloon;
+        let inflationCount = 0;
+
+        function randomizeBalloon() {
+            currentBalloon = balloonTypes[Math.floor(Math.random() * balloonTypes.length)];
+            balloonBody.className = `balloon-body ${currentBalloon.color}`;
+        }
+
+        function inflateBalloon() {
+            inflationCount++;
+            balloonScale += 0.1; // Increase balloon size
+            balloon.style.transform = `scale(${balloonScale})`;
+
+            if (inflationCount >= currentBalloon.popThreshold) {
+                alert(`The ${currentBalloon.color} balloon popped! You lost your earnings for this balloon.`);
+                resetBalloon();
+            } else {
+                currentEarnings += 0.05;
+                currentEarningsDisplay.textContent = currentEarnings.toFixed(2);
+            }
+        }
+
+        function cashIn() {
+            totalEarnings += currentEarnings;
+            totalEarningsDisplay.textContent = totalEarnings.toFixed(2);
+            resetBalloon();
+        }
+
+        function resetBalloon() {
+            if (balloonCount >= 10) {
+                alert(`Game Over! You earned a total of $${totalEarnings.toFixed(2)}.`);
+                restartGame();
+                return;
+            }
+
+            currentEarnings = 0;
+            currentEarningsDisplay.textContent = currentEarnings.toFixed(2);
+
+            balloonScale = 1;
+            balloon.style.transform = `scale(${balloonScale})`;
+
+            balloonCount++;
+            balloonCountDisplay.textContent = balloonCount;
+
+            inflationCount = 0;
+            randomizeBalloon();
+        }
+
+        function restartGame() {
+            currentEarnings = 0;
+            totalEarnings = 0;
+            balloonCount = 1;
+            balloonScale = 1;
+
+            currentEarningsDisplay.textContent = currentEarnings.toFixed(2);
+            totalEarningsDisplay.textContent = totalEarnings.toFixed(2);
+            balloonCountDisplay.textContent = balloonCount;
+
+            inflationCount = 0;
+            randomizeBalloon();
+            balloon.style.transform = `scale(${balloonScale})`;
+        }
+
+        // Initialize the first balloon
+        randomizeBalloon();
+    </script>
+</body>
+</html>
